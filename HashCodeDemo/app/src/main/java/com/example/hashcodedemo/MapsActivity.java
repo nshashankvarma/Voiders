@@ -77,58 +77,61 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("Location");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Toast.makeText(MapsActivity.this, "Success", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
+        databaseReference = FirebaseDatabase.getInstance().getReference("Loaction");
         locationListener = new LocationListener() {
 
             @Override
             public void onLocationChanged(Location location) {
 
                 //Log.i("Location", location.toString());
-                double latitude1 = (double) location.getLatitude();
-                double longitude1 = (double) location.getLongitude();
-                double latitude2 = mLatitude;
-                double longitude2 = mLongitude;
 
-                if (latitude2 != 0 || longitude2 != 0) {
-                    //Log.i("m", String.valueOf(latitude2));
-                    //Log.i("m1", String.valueOf(longitude2));
-                    double dist = distance(latitude1, longitude1, latitude2, longitude2, "K");
-                    if (dist > (RADIUS / 1000)) {
-                        Log.i("m2", "outside");
-                        Intent intent = new Intent(getApplicationContext(), AlertActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                        if(flag == true){
-                            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                                    .setSmallIcon(R.drawable.ic_launcher_foreground)
-                                    .setContentTitle("Notification")
-                                    .setContentText("This is a test notification")
-                                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                                    .setContentIntent(pendingIntent)
-                                    .setAutoCancel(false);
-                            Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                            builder.setSound(alarmSound);
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        double latitude1 = (double) snapshot.child("Latitude").getValue();
+                        double longitude1 = (double) snapshot.child("Longitude").getValue();
+                        double latitude2 = mLatitude;
+                        double longitude2 = mLongitude;
+                        //double latitude1 = location.getLatitude();
+                        //double longitude1 = location.getLongitude();
+                        if (latitude2 != 0 || longitude2 != 0) {
+                            //Log.i("m", String.valueOf(latitude2));
+                            //Log.i("m1", String.valueOf(longitude2));
+                            double dist = distance(latitude1, longitude1, latitude2, longitude2, "K");
+                            if (dist > (RADIUS / 1000)) {
+                                Log.i("m2", "outside");
+                                Intent intent = new Intent(getApplicationContext(), AlertActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                if (flag == true) {
+                                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                                            .setSmallIcon(R.drawable.ic_launcher_foreground)
+                                            .setContentTitle("Notification")
+                                            .setContentText("This is a test notification")
+                                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                            .setContentIntent(pendingIntent)
+                                            .setAutoCancel(false);
+                                    Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                    builder.setSound(alarmSound);
 
-                            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
-                            notificationManager.notify(NOTIFICATION_ID, builder.build());
-                            flag = false;
+                                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+                                    notificationManager.notify(NOTIFICATION_ID, builder.build());
+                                    flag = false;
+                                }
+
+
+                            }
+
                         }
+                    }
 
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
                     }
-                }
+                });
+
+
 
             }
 
@@ -250,8 +253,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static double distance(double lat1, double lon1, double lat2, double lon2, String unit) {
         if ((lat1 == lat2) && (lon1 == lon2)) {
             return 0;
-        }
-        else {
+        } else {
             double theta = lon1 - lon2;
             double dist = Math.sin(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2)) + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.cos(Math.toRadians(theta));
             dist = Math.acos(dist);
@@ -296,23 +298,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         addMarker(latLng);
         addCircle(latLng, RADIUS);
         flag = true;
-        mLatitude = (float)latLng.latitude;
-        mLongitude = (float)latLng.longitude;
+        mLatitude = (float) latLng.latitude;
+        mLongitude = (float) latLng.longitude;
     }
 
 
-
-    private void addMarker(LatLng latLng){
+    private void addMarker(LatLng latLng) {
         MarkerOptions markerOptions = new MarkerOptions().position(latLng);
         mMap.addMarker(markerOptions);
 
     }
-    private void addCircle(LatLng latLng, float radius){
+
+    private void addCircle(LatLng latLng, float radius) {
         CircleOptions circleOptions = new CircleOptions();
         circleOptions.center(latLng);
         circleOptions.radius(radius);
-        circleOptions.strokeColor(Color.argb(255,255, 0, 0));
-        circleOptions.fillColor(Color.argb(64,255, 0, 0));
+        circleOptions.strokeColor(Color.argb(255, 255, 0, 0));
+        circleOptions.fillColor(Color.argb(64, 255, 0, 0));
         circleOptions.strokeWidth(4);
         mMap.addCircle(circleOptions);
     }
