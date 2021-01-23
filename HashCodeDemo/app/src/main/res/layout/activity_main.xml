@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#B3E5FC"
     android:onClick="showMaps"
     tools:context=".MainActivity">
 
@@ -24,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/radiusEditText"
         android:layout_centerHorizontal="true"
-        android:text="Button"
-        app:backgroundTint="#00BCD4" />
+        android:text="Create a Geofence"
+        app:backgroundTint="#0288D1" />
 
 </RelativeLayout>

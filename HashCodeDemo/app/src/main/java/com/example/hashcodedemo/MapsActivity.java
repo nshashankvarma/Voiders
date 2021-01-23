@@ -106,8 +106,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 if (flag == true) {
                                     NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
                                             .setSmallIcon(R.drawable.ic_launcher_foreground)
-                                            .setContentTitle("Notification")
-                                            .setContentText("This is a test notification")
+                                            .setContentTitle("Geofence Breach!!")
+                                            .setContentText("Your pet is out of the Fence!!!Click here to send a voice mail")
                                             .setPriority(NotificationCompat.PRIORITY_HIGH)
                                             .setContentIntent(pendingIntent)
                                             .setAutoCancel(false);
