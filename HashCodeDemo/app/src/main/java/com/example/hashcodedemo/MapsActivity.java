@@ -313,8 +313,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         CircleOptions circleOptions = new CircleOptions();
         circleOptions.center(latLng);
         circleOptions.radius(radius);
-        circleOptions.strokeColor(Color.argb(255, 255, 0, 0));
-        circleOptions.fillColor(Color.argb(64, 255, 0, 0));
+        circleOptions.strokeColor(Color.argb(255, 0, 0, 255));
+        circleOptions.fillColor(Color.argb(64, 0, 0, 255));
         circleOptions.strokeWidth(4);
         mMap.addCircle(circleOptions);
     }
