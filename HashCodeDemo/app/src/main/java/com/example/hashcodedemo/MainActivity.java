@@ -29,7 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
     EditText radiusEditText;
-    Button button;
+    Button button, button3;
 
 
 
@@ -40,12 +40,21 @@ public class MainActivity extends AppCompatActivity {
 
         radiusEditText = (EditText)findViewById(R.id.radiusEditText);
         button = (Button)findViewById(R.id.button);
+        button3 = (Button)findViewById(R.id.button3);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, MapsActivity.class);
                 i.putExtra("radius", radiusEditText.getText().toString());
+                startActivity(i);
+            }
+        });
+
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, AlertActivity.class);
                 startActivity(i);
             }
         });

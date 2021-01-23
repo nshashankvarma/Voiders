@@ -20,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -36,6 +38,7 @@ public class AlertActivity extends AppCompatActivity {
     String fileName = null;
 
     private StorageReference storageReference;
+    private DatabaseReference databaseReference;
     ProgressDialog progressBar;
 
     @Override
@@ -68,6 +71,7 @@ public class AlertActivity extends AppCompatActivity {
 
 
         storageReference = FirebaseStorage.getInstance().getReference();
+        databaseReference = FirebaseDatabase.getInstance().getReference("flag");
 
         button.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -121,6 +125,7 @@ public class AlertActivity extends AppCompatActivity {
         filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                databaseReference.setValue("true");
                 Toast.makeText(AlertActivity.this, "Voice Mail Sent!!", Toast.LENGTH_SHORT).show();
 
             }
