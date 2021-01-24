@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private TextView longTextView;
     private LocationManager locationManager;
     private int REQUEST_LOCATION = 19;
+    String link;
 
     private DatabaseReference dRef;
     private LocationListener locationListener;
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
+    private DatabaseReference linkReference;
     ProgressDialog progressBar;
 
     @Override
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         super.onCreate(savedInstanceState);
 
         dRef = FirebaseDatabase.getInstance().getReference("Loaction");
+        linkReference = FirebaseDatabase.getInstance().getReference("link");
 
 
         setContentView(R.layout.activity_main);
@@ -93,15 +96,23 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String flag = (String) snapshot.getValue();
+
                 if(flag.equals("true")){
                     Toast.makeText(MainActivity.this, "Message", Toast.LENGTH_SHORT).show();
                     MediaPlayer mediaPlayer = new MediaPlayer();
-                    String link = (String) snapshot.child("Link").getValue();
-                    Log.i("Link", "Link");
+                    link = (String) snapshot.child("link").child("link").getValue();
+
+
+
 
 
                     try {
-                        mediaPlayer.setDataSource("gs://hashcode-demo.appspot.com/Audio/new_audio.3gp");
+                        mediaPlayer.reset();
+                        if(link != null){
+                            mediaPlayer.setDataSource(link);
+                            mediaPlayer.prepareAsync();
+                        }
+
 
                         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                             @Override
@@ -109,11 +120,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                 mp.start();
                             }
                         });
-
-                        mediaPlayer.prepare();
+                        //mediaPlayer.prepare();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+
 
                 }
                 databaseReference.setValue("false");

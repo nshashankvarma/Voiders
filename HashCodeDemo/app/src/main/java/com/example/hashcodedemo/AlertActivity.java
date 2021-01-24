@@ -28,6 +28,8 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AlertActivity extends AppCompatActivity {
 
@@ -39,6 +41,7 @@ public class AlertActivity extends AppCompatActivity {
 
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
+    private DatabaseReference linkReference;
     ProgressDialog progressBar;
 
     String link;
@@ -74,6 +77,7 @@ public class AlertActivity extends AppCompatActivity {
 
         storageReference = FirebaseStorage.getInstance().getReference();
         databaseReference = FirebaseDatabase.getInstance().getReference("flag");
+        linkReference = FirebaseDatabase.getInstance().getReference("link");
 
         button.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -124,7 +128,11 @@ public class AlertActivity extends AppCompatActivity {
         StorageReference filepath = storageReference.child("Audio").child("new_audio.3gp");
 
         link = filepath.getDownloadUrl().toString();
-        databaseReference.child("Link").setValue(link);
+        Map<String, String> users = new HashMap<>();
+        users.put("link", link);
+
+        linkReference.setValue(users);
+        Log.i("lnk", link);
 
         Uri uri = Uri.fromFile(new File(fileName));
 
@@ -133,6 +141,7 @@ public class AlertActivity extends AppCompatActivity {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 databaseReference.setValue("true");
                 Toast.makeText(AlertActivity.this, "Voice Mail Sent!!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AlertActivity.this, link, Toast.LENGTH_SHORT).show();
 
             }
         });

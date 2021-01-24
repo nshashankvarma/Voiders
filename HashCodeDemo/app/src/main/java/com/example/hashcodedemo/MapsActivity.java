@@ -75,7 +75,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Intent intent = getIntent();
         RADIUS = Float.parseFloat(intent.getStringExtra("radius"));
-        //allow = Integer.parseInt(intent.getStringExtra("allow"));
+        allow = Integer.parseInt(intent.getStringExtra("allow"));
         Toast.makeText(this, String.valueOf(allow), Toast.LENGTH_SHORT).show();
 
 
