@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +14,8 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -24,7 +27,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +46,26 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private LocationListener locationListener;
     HashMap<String, Double> latlong = new HashMap<>();
 
+    MediaRecorder recorder;
+    String fileName = null;
+
+    private StorageReference storageReference;
+    private DatabaseReference databaseReference;
+    ProgressDialog progressBar;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 10) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            } else {
+                //User denied Permission.
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +78,52 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         longTextView = findViewById(R.id.showLong);
         LocationManager locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         boolean enableGPS = locManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        progressBar = new ProgressDialog(this);
+
+        fileName = getExternalFilesDir(null).getAbsolutePath();
+        fileName += "/recorded_audio.3gp";
+
+
+
+        storageReference = FirebaseStorage.getInstance().getReference();
+        databaseReference = FirebaseDatabase.getInstance().getReference("flag");
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String flag = (String) snapshot.getValue();
+                if(flag.equals("true")){
+                    Toast.makeText(MainActivity.this, "Message", Toast.LENGTH_SHORT).show();
+                    MediaPlayer mediaPlayer = new MediaPlayer();
+                    String link = (String) snapshot.child("Link").getValue();
+                    Log.i("Link", "Link");
+
+
+                    try {
+                        mediaPlayer.setDataSource("gs://hashcode-demo.appspot.com/Audio/new_audio.3gp");
+
+                        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mp) {
+                                mp.start();
+                            }
+                        });
+
+                        mediaPlayer.prepare();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                databaseReference.setValue("false");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         if (!enableGPS) {
             Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -109,6 +181,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
         //latTextView.setText(String.valueOf(lat));
         //longTextView.setText(String.valueOf(log));
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
     }
 
     public void updateDatabase(double lat, double lon){

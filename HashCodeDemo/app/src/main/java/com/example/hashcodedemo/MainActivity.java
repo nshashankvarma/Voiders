@@ -29,7 +29,8 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
     EditText radiusEditText;
-    Button button, button3;
+    Button button, button3, allowButton;
+    int flag = 1;
 
 
 
@@ -41,12 +42,30 @@ public class MainActivity extends AppCompatActivity {
         radiusEditText = (EditText)findViewById(R.id.radiusEditText);
         button = (Button)findViewById(R.id.button);
         button3 = (Button)findViewById(R.id.button3);
+        allowButton = (Button)findViewById(R.id.allowButton);
+        flag = 1;
+        allowButton.setText("This is allowed Radius");
+
+        allowButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(flag == 1) {
+                    flag = 2;
+                    allowButton.setText("This is restricted Radius");
+                }else{
+                    flag = 1;
+                    allowButton.setText("This is allowed Radius");
+                }
+
+            }
+        });
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, MapsActivity.class);
                 i.putExtra("radius", radiusEditText.getText().toString());
+                i.putExtra("allow", String.valueOf(flag));
                 startActivity(i);
             }
         });

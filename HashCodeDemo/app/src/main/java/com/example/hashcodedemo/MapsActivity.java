@@ -49,6 +49,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private int fineLocationAccessCode = 10001;
     float RADIUS;
     boolean flag = false;
+    int allow;
 
     DatabaseReference databaseReference;
     LocationListener locationListener;
@@ -74,6 +75,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Intent intent = getIntent();
         RADIUS = Float.parseFloat(intent.getStringExtra("radius"));
+        //allow = Integer.parseInt(intent.getStringExtra("allow"));
+        Toast.makeText(this, String.valueOf(allow), Toast.LENGTH_SHORT).show();
+
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
@@ -83,7 +87,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onLocationChanged(Location location) {
 
-                //Log.i("Location", location.toString());
+                Log.i("Location", location.toString());
 
                 databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -94,101 +98,135 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         double longitude2 = mLongitude;
                         //double latitude1 = location.getLatitude();
                         //double longitude1 = location.getLongitude();
+
                         if (latitude2 != 0 || longitude2 != 0) {
                             //Log.i("m", String.valueOf(latitude2));
                             //Log.i("m1", String.valueOf(longitude2));
                             double dist = distance(latitude1, longitude1, latitude2, longitude2, "K");
-                            if (dist > (RADIUS / 1000)) {
-                                Log.i("m2", "outside");
-                                Intent intent = new Intent(getApplicationContext(), AlertActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                                if (flag == true) {
-                                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                                            .setSmallIcon(R.drawable.ic_launcher_foreground)
-                                            .setContentTitle("Geofence Breach!!")
-                                            .setContentText("Your pet is out of the Fence!!!Click here to send a voice mail")
-                                            .setPriority(NotificationCompat.PRIORITY_HIGH)
-                                            .setContentIntent(pendingIntent)
-                                            .setAutoCancel(false);
-                                    Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                                    builder.setSound(alarmSound);
+                            if (allow == 1) {
+                                // Toast.makeText(MapsActivity.this, "Outside", Toast.LENGTH_SHORT).show();
+                                if (dist > (RADIUS / 1000)) {
+                                    Intent intent = new Intent(getApplicationContext(), AlertActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                    if (flag == true) {
+                                        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                                                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                                                .setContentTitle("Geofence Breach!!")
+                                                .setContentText("Your pet is out of the Fence!!!Click here to send a voice mail")
+                                                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                                .setContentIntent(pendingIntent)
+                                                .setAutoCancel(false);
+                                        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                        builder.setSound(alarmSound);
 
-                                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
-                                    notificationManager.notify(NOTIFICATION_ID, builder.build());
-                                    flag = false;
+                                        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+                                        notificationManager.notify(NOTIFICATION_ID, builder.build());
+                                        flag = false;
+                                    }
+                                }
+                            }if (allow == 2) {
+                                    if (dist < (RADIUS / 1000)) {
+
+                                        Intent intent = new Intent(getApplicationContext(), AlertActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                        if (flag == true) {
+                                            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                                                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                                                    .setContentTitle("Geofence Breach!!")
+                                                    .setContentText("Your pet is inside restricted Area!!!Click here to send a voice mail")
+                                                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                                    .setContentIntent(pendingIntent)
+                                                    .setAutoCancel(false);
+                                            Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                            builder.setSound(alarmSound);
+
+                                            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+                                            notificationManager.notify(NOTIFICATION_ID, builder.build());
+                                            flag = false;
+                                        }
+
+
+                                    }
                                 }
 
 
                             }
-
                         }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
 
 
 
-            }
 
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
+                @Override
+                public void onCancelled (@NonNull DatabaseError error){
 
-            }
+                }
+            });
 
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-
-            }
-
-        };
-
-        // If device is running SDK < 23
-
-        if (Build.VERSION.SDK_INT < 23) {
-
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-
-        } else {
-
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                // ask for permission
-
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-
-
-            } else {
-
-                // we have permission!
-
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-
-            }
 
         }
 
+        @Override
+        public void onStatusChanged (String s,int i, Bundle bundle){
+
+        }
+
+        @Override
+        public void onProviderEnabled (String s){
+
+        }
+
+        @Override
+        public void onProviderDisabled (String s){
+
+        }
 
     }
+
+    ;
+
+    // If device is running SDK < 23
+
+        if(Build.VERSION.SDK_INT< 23)
+
+    {
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+    } else
+
+    {
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            // ask for permission
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+
+        } else {
+
+            // we have permission!
+
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+        }
+
+    }
+
+
+}
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -313,8 +351,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         CircleOptions circleOptions = new CircleOptions();
         circleOptions.center(latLng);
         circleOptions.radius(radius);
-        circleOptions.strokeColor(Color.argb(255, 0, 0, 255));
-        circleOptions.fillColor(Color.argb(64, 0, 0, 255));
+        if (allow == 1) {
+            circleOptions.strokeColor(Color.argb(255, 0, 0, 255));
+            circleOptions.fillColor(Color.argb(64, 0, 0, 255));
+        } else if (allow == 2) {
+            circleOptions.strokeColor(Color.argb(255, 255, 0, 0));
+            circleOptions.fillColor(Color.argb(64, 255, 0, 0));
+        }
         circleOptions.strokeWidth(4);
         mMap.addCircle(circleOptions);
     }

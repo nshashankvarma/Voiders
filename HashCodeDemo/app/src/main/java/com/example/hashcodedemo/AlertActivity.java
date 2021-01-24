@@ -41,6 +41,8 @@ public class AlertActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
     ProgressDialog progressBar;
 
+    String link;
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -118,7 +120,11 @@ public class AlertActivity extends AppCompatActivity {
     public void uploadRecording(){
         //progressBar.setMessage("Uploading");
         //progressBar.show();
+
         StorageReference filepath = storageReference.child("Audio").child("new_audio.3gp");
+
+        link = filepath.getDownloadUrl().toString();
+        databaseReference.child("Link").setValue(link);
 
         Uri uri = Uri.fromFile(new File(fileName));
 
