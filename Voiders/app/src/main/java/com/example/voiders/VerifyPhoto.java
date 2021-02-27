@@ -25,7 +25,7 @@ public class VerifyPhoto extends AppCompatActivity {
         img = (ImageView)findViewById(R.id.imageView4);
 
         Intent intent = getIntent();
-        Bitmap bitmap = intent.getParcelableExtra("image");
+        final Bitmap bitmap = intent.getParcelableExtra("image");
         img.setImageBitmap(bitmap);
 
         cancelButton.setOnClickListener(new View.OnClickListener() {

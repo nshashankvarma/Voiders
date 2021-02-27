@@ -13,6 +13,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
+
 public class CopyTextActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     EditText copyEditText;
     String text, lang;
@@ -38,16 +42,18 @@ public class CopyTextActivity extends AppCompatActivity implements AdapterView.O
         Intent intent = getIntent();
         Bitmap bitmap = intent.getParcelableExtra("image");
 
-//        if(!Python.isStarted()){
-//            Python.start(new AndroidPlatform(this));
-//        }
+        if(!Python.isStarted()){
+            Python.start(new AndroidPlatform(this));
+        }
 
 //        Python py = Python.getInstance();
-//        PyObject pyobj = py.getModule("p");
+//        PyObject pyobj = py.getModule("first");
 //
 //        PyObject obj=null;
-//        obj = pyobj.callAttr("add", 5, 6);//function , //parameters)
-//        Log.i("Sum", String.valueOf(obj));
+//        obj = pyobj.callAttr("detect", R.drawable.p);//function , //parameters)
+//        Log.i("Text", String.valueOf(obj));
+
+        //copyEditText.setText(String.valueOf(obj));
 
         text = copyEditText.getText().toString();
 

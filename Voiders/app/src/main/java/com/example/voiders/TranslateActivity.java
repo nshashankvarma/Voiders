@@ -19,22 +19,16 @@ public class TranslateActivity extends AppCompatActivity {
         txt = intent.getStringExtra("text");
         lang = intent.getStringExtra("lang");
 
-        switch(lang){
-            case "Kannada":
-                langTag = "kn";
-                break;
-            case "Hindi":
-                langTag = "hi";
-                break;
-            case "Tamil":
-                langTag = "ta";
-                break;
-            case "Telugu":
-                langTag = "te";
-                break;
-            case "Malayalam":
-                langTag = "ml";
-                break;
+        if ("Kannada".equals(lang)) {
+            langTag = "kn";
+        } else if ("Hindi".equals(lang)) {
+            langTag = "hi";
+        } else if ("Tamil".equals(lang)) {
+            langTag = "ta";
+        } else if ("Telugu".equals(lang)) {
+            langTag = "te";
+        } else if ("Malayalam".equals(lang)) {
+            langTag = "ml";
         }
 
         webView = (WebView)findViewById(R.id.webView);

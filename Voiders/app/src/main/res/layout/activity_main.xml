@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity" >
+    android:background="#FFFFFF"
+    tools:context=".MainActivity">
 
     <ImageView
         android:id="@+id/imageView"
@@ -22,7 +23,8 @@
         android:layout_centerVertical="false"
         android:layout_marginStart="40dp"
         android:layout_marginLeft="40dp"
-        android:layout_marginTop="120dp">
+        android:layout_marginTop="120dp"
+        app:cardBackgroundColor="#00BCD4">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -61,7 +63,8 @@
         android:layout_centerVertical="false"
         android:layout_marginStart="40dp"
         android:layout_marginLeft="40dp"
-        android:layout_marginTop="80dp">
+        android:layout_marginTop="80dp"
+        app:cardBackgroundColor="#00BCD4">
 
         <RelativeLayout
             android:layout_width="match_parent"
