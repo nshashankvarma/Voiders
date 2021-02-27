@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Voiders</string>
+    <string-array name="languages">
+        <item>Kannada</item>
+        <item>Hindi</item>
+        <item>Tamil</item>
+        <item>Telugu</item>
+        <item>Malayalam</item>
+
+    </string-array>
+</resources>
